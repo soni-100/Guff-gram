@@ -1,0 +1,44 @@
+{% extends 'posts/base.html' %}
+
+{% block title %}Home - Guffgram{% endblock %}
+
+{% block content %}
+    <h1>Welcome to Guffgram</h1>
+    
+    {% if user.is_authenticated %}
+        <p>Hello, {{ user.username }}! Share your moments with the world.</p>
+        <p><a href="{% url 'post_create' %}" class="btn">Create New Post</a></p>
+    {% else %}
+        <p>Welcome to Guffgram! A place to share your photos and connect with others.</p>
+        <p><a href="{% url 'register' %}" class="btn">Join Guffgram</a> or <a href="{% url 'login' %}" class="btn">Login</a></p>
+    {% endif %}
+    
+    <hr>
+    
+    {% if posts %}
+        <h2>Recent Posts</h2>
+        {% for post in posts %}
+            <div class="post">
+                <div class="post-meta">
+                    <strong>{{ post.user.username }}</strong> - 
+                    Posted on {{ post.created_at|date:"F j, Y" }} at {{ post.created_at|time:"g:i A" }}
+                </div>
+                
+                <img src="{{ post.photo.url }}" alt="Post by {{ post.user.username }}">
+                
+                <p>{{ post.caption }}</p>
+                
+                {% if user.is_authenticated and post.user == user %}
+                    <div class="post-actions">
+                        <a href="{% url 'post_edit' post.id %}" class="btn">Edit</a>
+                        <a href="{% url 'post_delete' post.id %}" class="btn btn-danger">Delete</a>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="post">
+            <p>No posts yet.</p>
+        </div>
+    {% endif %}
+{% endblock %}
