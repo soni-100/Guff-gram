@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Post
-from .forms import CustomUserCreationForm, PostForm
+from .forms import CustomuserCreationForms, PostForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
@@ -8,20 +8,20 @@ from django.contrib.auth.decorators import login_required
 # Create your views here.
 def home(request):
     posts = Post.objects.all()
-    return render(request, '', {'posts' : posts})
+    return render(request, 'posts/home.html', {'posts' : posts})
 
 def register(request):
     if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)
+        form =CustomuserCreationForms(request.POST)
         if form.is_valid():
             user = form.save()
             messages.success(request, 'User is registered successfully, now you can login')
             return redirect('login')
     else:
-        form = CustomUserCreationForm()
-    return redirect(request, '', {'form': form})
+        form = CustomuserCreationForms()
+    return render(request, 'registration/register.html', {'form': form})
 
-@login_required
+# @login_required
 def post_create(request):
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES)
@@ -33,7 +33,7 @@ def post_create(request):
             return redirect('home')
     else:
         form = PostForm()
-    return render (request, '', {'form' : form})
+    return render (request, 'posts/post_create.html', {'form' : form})
 
 @login_required
 def post_edit(request, post_id):
@@ -51,7 +51,7 @@ def post_edit(request, post_id):
         
     else:
         form = PostForm(instance=post)
-    return (request, '', {'form' : form, 'post': post})
+    return (request, 'posts/post_edit.html', {'form' : form, 'post': post})
 
 
 @login_required
@@ -66,6 +66,4 @@ def post_delete(request, post_id):
         post.delete()
         messages.success(request, 'Post deleted successfully')
         return redirect('home')
-    return render(request, '',{'post':post})
-
-# Create your views here.
+    return render(request, 'posts/post_delete.html', {'post': post})
